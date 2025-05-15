@@ -1,6 +1,6 @@
 from typing import Optional, List, Any
 
-from pydantic import BaseModel, ValidationError, validator, Field
+from pydantic import BaseModel, ValidationError, field_validator, Field, ConfigDict
 
 import json
 
@@ -28,21 +28,21 @@ class StatusElement(BaseModel):
 
 
 class Asssignee(BaseModel):
-    id: str = None
+    id: int = None
     color: str = None
     username: str = None
     initials: str = None
 
-    profilePicture: str = None
+    profilePicture: Optional[str] = None
 
 
 class ListFolder(BaseModel):
-    id: str
-    name: str
+    id: str = None
+    name: str = None
 
-    hidden: Optional[bool]
+    hidden: Optional[bool] = None
 
-    access: bool
+    access: bool = None
 
 
 class SingleList(BaseModel):
@@ -59,9 +59,9 @@ class SingleList(BaseModel):
 
     priority: Optional[Priority] = None
 
-    assignee: Asssignee = None
-    due_date: str = None
-    start_date: str = None
+    assignee: Optional[Asssignee] = None
+    due_date: Optional[str] = None
+    start_date: Optional[str] = None
 
     folder: ListFolder = None
 
@@ -252,7 +252,6 @@ class TypeConfig(BaseModel):
 
     include_team_members: Optional[bool]
 
-
 class CustomItems:
     enabled: bool = None
 
@@ -273,7 +272,7 @@ class CustomField(BaseModel):
 
     type: str = None
 
-    type_config: TypeConfig = None
+    type_config: Optional[TypeConfig] = None
     date_created: str = None
 
     hide_from_guests: bool = None
@@ -281,6 +280,13 @@ class CustomField(BaseModel):
     value: Optional[Any] = None
 
     required: bool = None
+
+    placeholder : Optional[str] = None
+
+    @field_validator("type_config", mode="before")
+    @classmethod
+    def set_type_config(cls, type_config):
+        return None if type_config == {} else type_config
 
 
 class TimeTracking(BaseModel):
@@ -348,6 +354,8 @@ class PortfoliosStatus(BaseModel):
 
 
 class Features(BaseModel):
+    model_config = ConfigDict(validate_assignment=True)
+
     due_dates: DueDates = None
 
     multiple_assignees: MultipleAssignees = None
@@ -386,30 +394,33 @@ class Features(BaseModel):
 
     emails: Emails = None
 
-    class Config:
-        validate_assignment = True
-
-    @validator("time_tracking", pre=True, always=True)
+    @field_validator("time_tracking", mode="before")
+    @classmethod
     def set_tt(cls, time_tracking):
         return time_tracking or {"enabled": False}
 
-    @validator("custom_fields", pre=True, always=True)
+    @field_validator("custom_fields", mode="before")
+    @classmethod
     def set_cf(cls, custom_fields):
         return custom_fields or {"enabled": False}
 
-    @validator("tags", pre=True, always=True)
+    @field_validator("tags", mode="before")
+    @classmethod
     def set_tags(cls, tags):
         return tags or {"enabled": False}
 
-    @validator("multiple_assignees", pre=True, always=True)
+    @field_validator("multiple_assignees", mode="before")
+    @classmethod
     def set_ma(cls, multiple_assignees):
         return multiple_assignees or {"enabled": False}
 
-    @validator("checklists", pre=True, always=True)
+    @field_validator("checklists", mode="before")
+    @classmethod
     def set_checklists(cls, checklists):
         return checklists or {"enabled": False}
 
-    @validator("portfolios", pre=True, always=True)
+    @field_validator("portfolios", mode="before")
+    @classmethod
     def set_portfolios(cls, portfolios):
         return portfolios or {"enabled": False}
 
@@ -590,9 +601,9 @@ class Task(BaseModel):
     priority: Optional[Any] = None
     due_date: Optional[str] = None
     start_date: Optional[str] = None
-    time_estimate: Optional[str] = None
+    time_estimate: Optional[int] = None
 
-    time_spent: Optional[str] = None
+    time_spent: Optional[int] = None
 
     custom_fields: Optional[List[CustomField]] = None
     list: Optional[ClickupList] = None
