@@ -51,6 +51,8 @@ _For more examples, please refer to the [Documentation](https://clickupython.rea
 - `get_tasks(list_id, archived, page, order_by, reverse, subtasks, statuses, include_closed, assignees, due_date_gt, due_date_lt, date_created_gt, date_created_lt, date_updated_gt, date_updated_lt)`
 - `create_task(list_id, name, description, priority, assignees, tags, status, due_date, start_date, notify_all)`
 - `update_task(task_id, name, description, status, priority, time_estimate, archived, add_assignees,remove_assignees`
+- `get_task_custom_field_value(task, custom_field_id)`
+- `set_task_custom_field_value(task_id, custom_field_id, custom_field_value)`
 
 ### List
 
