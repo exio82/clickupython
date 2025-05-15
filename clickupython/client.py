@@ -114,7 +114,11 @@ class ClickUpClient:
                 response = requests.post(path, headers=self.__headers(), data=data)
 
                 self.request_count += 1
-            response_json = response.json()
+            
+            try:
+                response_json = response.json()
+            except json.JSONDecodeError as e:
+                response_json = {'err' : 'JSONDecodeError', 'value' : response.text}
 
             if response.status_code in [401, 400, 500, 404]:
                 raise exceptions.ClickupClientError(
@@ -741,6 +745,7 @@ class ClickUpClient:
         priority: int = None,
         time_estimate: int = None,
         archived: bool = None,
+        due_date: int = None,
         add_assignees: List[str] = None,
         remove_assignees: List[int] = None,
     ) -> models.Task:
@@ -755,6 +760,7 @@ class ClickUpClient:
             :priority (int, optional): Priority of the task. Range 1-4. Defaults to None.
             :time_estimate (int, optional): Time estimate of the task. Defaults to None.
             :archived (bool, optional): Whether the task should be archived or not. Defaults to None.
+            :due_date (int, optional): The due date in integer timestamp format. Defaults to None.
             :add_assignees (List[str], optional): List of assignee IDs to add to the task. Defaults to None.
             :remove_assignees (List[int], optional): List of assignee IDs to remove from the task. Defaults to None.
 
@@ -1541,3 +1547,13 @@ class ClickUpClient:
 
         if fetched_time_data:
             return models.TimeTrackingDataSingle.build_data(fetched_time_data)
+
+    def set_task_custom_field_value(self, task_id : str, custom_field_id : str, custom_field_value : any):
+        body = json.dumps({'value' : custom_field_value})
+        self.__post_request('task/', body, None, False, task_id, 'field/', custom_field_id)
+    
+    def get_task_custom_field_value(self, task : models.Task, customFieldId : str) -> str:
+        for cf in task.custom_fields:
+            if cf.id == customFieldId:
+                return cf.value
+        return None
