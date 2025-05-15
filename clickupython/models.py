@@ -368,21 +368,21 @@ class Features(BaseModel):
 
     remap_closed_due_date: bool = False
 
-    time_tracking: Optional[TimeTracking]
+    time_tracking: Optional[TimeTracking] = None
 
-    tags: Optional[TagsStatus]
+    tags: Optional[TagsStatus] = None
 
-    time_estimates: Optional[TimeEstimateStatus]
+    time_estimates: Optional[TimeEstimateStatus] = None
 
-    checklists: Optional[ChecklistsStatus]
+    checklists: Optional[ChecklistsStatus] = None
 
-    custom_fields: Optional[CustomFieldsStatus]
+    custom_fields: Optional[CustomFieldsStatus] = None
 
-    remap_dependencies: Optional[RemapDependenciesStatus]
+    remap_dependencies: Optional[RemapDependenciesStatus] = None
 
     dependency_warning: DependencyWarning = None
 
-    portfolios: Optional[PortfoliosStatus]
+    portfolios: Optional[PortfoliosStatus] = None
 
     points: Points = None
 
@@ -672,13 +672,13 @@ class Tasks(BaseModel):
 
 
 class User(BaseModel):
-    id: str = None
+    id: int = None
     username: str = None
     initials: str = None
     email: str = None
     color: str = None
 
-    profilePicture: str = None
+    profilePicture: Optional[str] = None
 
     initials: Optional[str] = None
 
@@ -694,7 +694,7 @@ class User(BaseModel):
 
 
 class InvitedBy(BaseModel):
-    id: str = None
+    id: int = None
     username: str = None
     color: str = None
     email: str = None
@@ -723,7 +723,7 @@ class Team(BaseModel):
     name: str = None
     color: str = None
 
-    avatar: str = None
+    avatar: Optional[str] = None
 
     members: List[Member] = None
 
